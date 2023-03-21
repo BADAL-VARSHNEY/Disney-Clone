@@ -19,6 +19,7 @@ const Recommends =()=>{
                 </Link>
                 </div> 
             ))}
+            <h1>Badal</h1>
             </div>
         </div>
         </>
