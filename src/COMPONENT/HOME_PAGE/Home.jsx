@@ -8,29 +8,31 @@ import './Home.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import fb from '../FIREBASE/Firebase';
-import { selectmovimgLoading, setMovies, stLoading } from "../../Features/Movie/MovieSlice";
+import { selectRecommend, setMovies, } from "../../Features/Movie/MovieSlice";
 import { selectUserName } from '../../Features/User/UserSlice';
-import Spinner from 'react-spinkit'
-
+import { useState } from "react";
+import FadeLoader from "react-spinners/FadeLoader";
+const override = {
+    display: "block",
+    margin: "300px auto",
+};
 
 const Home = () => {
+    let [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
     const userName = useSelector(selectUserName);
-    const loading = useSelector(selectmovimgLoading);
-    console.log(loading)
+    const movies = useSelector(selectRecommend);
+
     let recommends = [];
     let newDisneys = [];
     let originals = [];
     let trending = [];
-    
+
     useEffect(() => {
-        console.log("hello");
-        dispatch(stLoading(true))
-        
+
         fb.collection("movies").onSnapshot((snapshot) => {
             console.log(recommends)
             snapshot.docs.map((doc) => {
-                console.log("Badal") ;
                 switch (doc.data().type) {
                     case "recommend":
                         recommends = [...recommends, { id: doc.id, ...doc.data() }];
@@ -58,41 +60,31 @@ const Home = () => {
                 })
             );
         });
-        
-        dispatch(stLoading(false))
+
 
     }, [userName]);
-    if (loading) {
-        alert('loading')
-
-        return (
-          <div className='loading_app'>
-            <div className='loading_spin'>
-              
-              <img className='Logo_App'  
-                src='https://img.freepik.com/premium-vector/initial-dr-letter-logo-with-script-typography-vector-template-creative-script-letter-dr-logo-design_616200-715.jpg' alt='Devi restarent'/>
-           
-              <Spinner
-                name='pacman'
-                color='green'
-                fadeIn='none'
-    
-              />
-    
-            </div>
-          </div>
-        )
-      }
+    console.log(movies)
+    useEffect(() => {
+        (movies?.length > 0) ? setLoading(false) : setLoading(true)
+    }, [movies])
     return (
         <>
-            <main className="home-container">
-                <ImgSlider />
-                <Viewers />
-                <Recommends />
-                <NewDisney />
-                <Originals />
-                <Trending />
-            </main>
+            {
+                loading ? <FadeLoader
+                    loading={true}
+                    color={'#fff'}
+                    cssOverride={override}
+                    size={150}
+                /> :
+                    <main className="home-container">
+                        <ImgSlider />
+                        <Viewers />
+                        <Recommends />
+                        <NewDisney />
+                        <Originals />
+                        <Trending />
+                    </main>
+            }
         </>
     )
 }

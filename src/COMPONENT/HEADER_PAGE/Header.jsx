@@ -45,15 +45,10 @@ console.log(userphoto, 12)
                     alert(errer.message);
                 })
         } else if (username) {
-            const confirm = window.confirm('Are you sure?')
             auth.signOut()
                 .then(() => {
                     dispatch(setSignOutState());
-                    if (confirm) {
                         navigate("/");
-                    } else {
-                        navigate("/Home")
-                    }
                 })
                 .catch((err) => alert(err.message));
         }
